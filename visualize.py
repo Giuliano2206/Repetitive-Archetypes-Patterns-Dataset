@@ -1,3 +1,4 @@
+import os
 import json
 
 import fiftyone as fo
@@ -11,12 +12,16 @@ dataset = fo.Dataset.from_dir(
     name="benchmark",
     labels_path="annotations.json",
 )
+culture_file = "datasets/datasetCulture/culture.json"
+shape_file = "datasets/datasetCulture/shape.json"
 
-with open("datasets/datasetCulture/culture.json") as f:
-    culture = json.load(f)
+if os.path.exists(culture_file):
+    with open("datasets/datasetCulture/culture.json") as f:
+        culture = json.load(f)
 
-with open("datasets/datasetCulture/shape.json") as f:
-    shape = json.load(f)
+if os.path.exists(shape_file):
+    with open("datasets/datasetCulture/shape.json") as f:
+        shape = json.load(f)
 
 for sample in dataset:
     image_name = sample.filepath.split("/")[-1]

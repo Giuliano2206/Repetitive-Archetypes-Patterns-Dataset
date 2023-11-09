@@ -6,10 +6,11 @@ import random
 import albumentations as A
 import cv2
 import numpy as np
+from tqdm import tqdm
 from pycocotools import mask as mask_util
 from pycocotools.coco import COCO
 
-from tools import polygon_to_bbox
+from utils import polygon_to_bbox
 
 parser = argparse.ArgumentParser(
     description=(
@@ -42,9 +43,7 @@ parser.add_argument(
 parser.add_argument(
     '--cat_unique',
     type=bool,
-    default=True,
-    nargs='?',
-    const=True,
+    default=False,
     help='Use only one category'
 )
 
@@ -109,33 +108,6 @@ def get_annotation_from_transform(annotation, bin_mask, image_id, to_rle=False, 
     else:
         return None
 
-
-def create_crop_images(images, origin_images, path_crops_benchmark):
-    new_images = []
-    total_images = len(images)
-    for i, image in enumerate(images):
-        print(f'Processing image {i}')
-        file_name = image['file_name']
-        img_path = os.path.join(origin_images, file_name)
-        _, (w, h) = crop_image(img_path, cropped_image_dir=path_crops_benchmark)
-        basename_left = f'left_{file_name}'
-        basename_right = f'right_{file_name}'
-        image_left = dict(
-            file_name=basename_left,
-            height=h,
-            width=w,
-            id=image['id'],
-        )
-        image_right = dict(
-            file_name=basename_right,
-            height=h,
-            width=w,
-            id=image['id'] + total_images,
-        )
-        new_images.append(image_left)
-        new_images.append(image_right)
-    return new_images
-
 def get_area(segmentation, h, w) -> float:
     # get the area of the segmentation
     rle = mask_util.frPyObjects(segmentation, h, w)
@@ -146,8 +118,7 @@ def crop_images_dataset(coco, images, path_origin_benchmark, path_crops_benchmar
     new_anns = []
     new_images = []
     id_ann = 0
-    for i, img in enumerate(images):
-        print(f'Processing image {i}')
+    for img in tqdm(images, desc='Images Cropped', leave=False, position=0, ncols=100, unit='img'):
         file_name = img['file_name']
         h_org, w_org = img['height'], img['width']
         img_path = os.path.join(path_origin_benchmark, file_name)
@@ -168,7 +139,7 @@ def crop_images_dataset(coco, images, path_origin_benchmark, path_crops_benchmar
         new_images.append(img_2)
         anns_img = coco.getAnnIds(imgIds=img['id'])
         anns_img = coco.loadAnns(anns_img)
-        for i, an in enumerate(anns_img):
+        for an in anns_img:
             image_id = an['image_id']
             segmentation = an['segmentation']
             mask_bin = np.zeros((h_org, w_org), dtype=np.uint8)
@@ -329,7 +300,7 @@ def apply_albumentations(coco_dataset, images, annotations, cats, path_crops_ben
     new_ann_id = len(annotations) + 1
     images_transformed = []
     anns_transformed = []
-    for i, image in enumerate(images):
+    for i, image in enumerate(tqdm(images, desc='Images', leave=False, position=0, ncols=100, unit='img')):
         print(f'Processing image {i}')
         file_name = image['file_name']
         img_path = os.path.join(path_crops_benchmark, folder, "data", file_name)

@@ -1,8 +1,10 @@
-import json
-import glob
 import argparse
-from utils import *
+import glob
+import json
+from tqdm import tqdm
 from collections import defaultdict
+
+from utils import *
 
 parser = argparse.ArgumentParser(
     description=(

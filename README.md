@@ -46,4 +46,5 @@ We use the [JSON2YOLO format repository from ultralytics](https://github.com/ult
 
 ## Citation
 
-[Repetitive Patterns on Textured 3D Surfaces](https://datasets.cgv.tugraz.at/pattern-benchmark/) [![License: CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/80x15.png)](https://creativecommons.org/licenses/by-sa/4.0/) 2021 by Lengauer, Stefan and Sipiran, Ivan and Preiner, Reinhold and Schreck, Tobias and Bustos, Benjamin is licensed under [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+* [Repetitive Patterns on Textured 3D Surfaces](https://datasets.cgv.tugraz.at/pattern-benchmark/) [![License: CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/80x15.png)](https://creativecommons.org/licenses/by-sa/4.0/) 2021 by Lengauer, Stefan and Sipiran, Ivan and Preiner, Reinhold and Schreck, Tobias and Bustos, Benjamin is licensed under [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+* [![DOI](https://zenodo.org/badge/186122711.svg)](https://zenodo.org/badge/latestdoi/186122711)

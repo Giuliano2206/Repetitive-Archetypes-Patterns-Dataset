@@ -6,8 +6,8 @@ import os
 import cv2
 import numpy as np
 from pycocotools import mask as mask_util
+from tqdm import tqdm
 
-from tools import polygon_to_bbox
 from utils import *
 
 parser = argparse.ArgumentParser(
@@ -169,11 +169,15 @@ def build_coco_json(folders,
     category_id = 1
     annotation_id = 0
     image_id = 0
-    for i, folder in enumerate(folders):
+    for i, folder in enumerate(tqdm(folders, 
+                                    desc='Images', 
+                                    leave=False, 
+                                    position=0, 
+                                    ncols=100, 
+                                    unit='img')):
         img_path = glob.glob(folder + '/*_flat.png')[0]
         json_file = glob.glob(folder + '/*.json')[0]
         with open(json_file) as file:
-            print(f'Processing image {i}')
             segmentation_data = json.load(file)
             crop_coords = get_coords_crops(segmentation_data)
             basename = os.path.basename(img_path)

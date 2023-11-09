@@ -2,7 +2,7 @@
 
 In this project we work with the dataset published in [A Benchmark Dataset for Repetitive Pattern Recognition on Textured 3D Surfaces](https://diglib.eg.org/handle/10.1111/cgf14352) focused in the task of detect and segment patterns. The original data is available in [the tugraz website](https://datasets.cgv.tugraz.at/pattern-benchmark/) where you can find more information about the paper and the structure of the dataset.
 
-The dataset is composed by 82 differents 3D models of painted ancient Peruvial vessels, exhibiting different levels of repetitiveness in their surface patterns. The archeotypes exhibited in the surface were annotated by archaeologists using a specialized tool shared in the paper, obtaining a ground truth segmentation of the patterns. The format of the annotated data is a .json file with the following structure:
+The dataset is composed by 82 differents 3D models of painted ancient Peruvian vessels, exhibiting different levels of repetitiveness in their surface patterns. The archeotypes exhibited in the surface were annotated by archaeologists using a specialized tool shared in the paper, obtaining a ground truth segmentation of the patterns. The format of the annotated data is a .json file with the following structure:
 
 ```json
 {

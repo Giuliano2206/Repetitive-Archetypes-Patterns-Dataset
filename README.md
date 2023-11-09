@@ -41,3 +41,7 @@ For get the annotations in the YOLO format you can run the following command:
 python coco_to_yolo.py
 ```
 We use the [JSON2YOLO format repository from ultralytics](https://github.com/ultralytics/JSON2YOLO.git) to convert the annotations from COCO to YOLO format with refactoring for the structure of datasets.
+
+## Citation
+
+[Repetitive Patterns on Textured 3D Surfaces](https://datasets.cgv.tugraz.at/pattern-benchmark/) [![License: CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/80x15.png)](https://creativecommons.org/licenses/by-sa/4.0/) 2021 by Lengauer, Stefan and Sipiran, Ivan and Preiner, Reinhold and Schreck, Tobias and Bustos, Benjamin is licensed under [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)

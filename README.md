@@ -27,6 +27,8 @@ The dataset is composed by 82 differents 3D models of painted ancient Peruvial v
 
 In this repository we provide a python script to convert the data in a COCO and YOLO standard format to be used in the training of deep learning models, and a python script to divide the data in train and validation with crops considering minimum visibility of the masks in the coordinates crops. 
 
+## Download the data
+
 The script to convert the data in COCO format and remove areas without segmentation is available in the file `convert.py`. You can run the following command for get the annotations:
 
 ```bash

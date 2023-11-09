@@ -38,7 +38,7 @@ parser.add_argument(
     default=False,
     nargs='?',
     const=True,
-    help='True if COCO format has 91 classes, False if COCO format has 80 classes'
+    help='True if want to use COCO format with 80 classes, False then use COCO format with 91 classes'
 )
 
 

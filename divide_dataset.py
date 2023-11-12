@@ -72,7 +72,7 @@ def create_dataset_crops(coco: COCO, path_origin_benchmark, path_crops_benchmark
                                       path_origin_benchmark, 
                                       path_crops_benchmark, 
                                       total_images=total_images)
-    coco.dataset["data"] = images
+    coco.dataset["images"] = images
     coco.dataset['annotations'] = ann
     coco_path = os.path.join(path_crops_benchmark, 'annotations.json')
     d = json.dumps(coco.dataset)
@@ -205,7 +205,7 @@ def get_val_sample(images, val_size, seed=42):
 def divide_train_val(path_crops_benchmark, 
                      val_size=0.1,
                      annotation_file='annotations.json', 
-                     cat_unique=True,
+                     cat_unique=False,
                      output_original=True, 
                      ):
     random.seed(42)
@@ -214,7 +214,7 @@ def divide_train_val(path_crops_benchmark,
     coco_path = os.path.join(path_crops_benchmark, annotation_file)
     with open(coco_path) as f:
         coco = json.load(f)
-    images = coco["data"]
+    images = coco["images"]
     annotations = coco['annotations']
     if cat_unique:
         for ann in annotations:
@@ -367,8 +367,8 @@ def increase_dataset(path_crops_benchmark,
                      ):
     coco_train = COCO(os.path.join(path_crops_benchmark, train_folder, annotation_file))
     coco_val = COCO(os.path.join(path_crops_benchmark, val_folder, annotation_file))
-    images_train = coco_train.dataset["data"]
-    images_val = coco_val.dataset["data"]
+    images_train = coco_train.dataset["images"]
+    images_val = coco_val.dataset["images"]
     annotations_train = coco_train.dataset['annotations']
     annotations_val = coco_val.dataset['annotations']
     
@@ -389,7 +389,7 @@ def increase_dataset(path_crops_benchmark,
     os.system(f'cp {os.path.join(path_crops_benchmark, val_folder, "data", "*")} {os.path.join(path_crops_benchmark, val_folder_new, "data")}')
 
 
-def main(origin_coco_path, path_crops_benchmark, val_size, cat_unique=True, output_original=False):
+def main(origin_coco_path, path_crops_benchmark, val_size, cat_unique=False, output_original=False):
     os.makedirs(os.path.join(path_crops_benchmark, "data"), exist_ok=True)
     origin_annotations = os.path.join(origin_coco_path, 'annotations.json')
     origin_images = os.path.join(origin_coco_path, "data")

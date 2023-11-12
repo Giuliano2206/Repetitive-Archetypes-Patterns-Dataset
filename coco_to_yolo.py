@@ -22,7 +22,7 @@ parser.add_argument(
 parser.add_argument(
     '--use_segments',
     type=bool,
-    default=False,
+    default=True,
     nargs='?',
     const=True,
     help=(
@@ -31,17 +31,6 @@ parser.add_argument(
         'segments'
     )
 )
-
-parser.add_argument(
-    '--cls91to80',
-    type=bool,
-    default=False,
-    nargs='?',
-    const=True,
-    help='True if want to use COCO format with 80 classes, False then use COCO format with 91 classes'
-)
-
-
 
 def min_index(arr1, arr2):
     """Find a pair of indexes with the shortest distance. 
@@ -114,7 +103,7 @@ def make_dirs(dir='datasets/yolo_datasets/'):
     return dir
 
 
-def convert_coco_json(json_files, use_segments=False, cls91to80=False):
+def convert_coco_json(json_files, use_segments=False):
     save_dir = make_dirs()  # output directory
     coco80 = coco91_to_coco80_class()
 
@@ -150,8 +139,8 @@ def convert_coco_json(json_files, use_segments=False, cls91to80=False):
                 if box[2] <= 0 or box[3] <= 0:  # if w <= 0 and h <= 0
                     continue
 
-                cls = coco80[ann['category_id'] - 1] if cls91to80 else ann['category_id'] - 1  # class
-                box = [cls] + box.tolist()
+                cls_id = ann['category_id'] - 1  # class
+                box = [cls_id] + box.tolist()
                 if box not in bboxes:
                     bboxes.append(box)
                 # Segments
@@ -162,7 +151,7 @@ def convert_coco_json(json_files, use_segments=False, cls91to80=False):
                     else:
                         s = [j for i in ann['segmentation'] for j in i]  # all segments concatenated
                         s = (np.array(s).reshape(-1, 2) / np.array([w, h])).reshape(-1).tolist()
-                    s = [cls] + s
+                    s = [cls_id] + s
                     if s not in segments:
                         segments.append(s)
 
@@ -176,6 +165,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.json_file is None:
         json_files = glob.glob('datasets/coco*/*.json') + glob.glob('datasets/coco*/*/*.json')
-        convert_coco_json(json_files, args.use_segments, args.cls91to80)
+        convert_coco_json(json_files, args.use_segments)
     else:
-        convert_coco_json([args.json_file], args.use_segments, args.cls91to80)
+        convert_coco_json([args.json_file], args.use_segments)

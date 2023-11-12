@@ -63,6 +63,14 @@ parser.add_argument(
     help='Minimum visibility to consider an annotation'
 )
 
+parser.add_argument(
+    '--output_zero_shot',
+    type=bool,
+    default=False,
+    nargs='?',
+    const=True,
+    help='Output images with zero-shot annotations'
+)
 
 def create_dataset_crops(coco: COCO, path_origin_benchmark, path_crops_benchmark):
     images = coco.loadImgs(coco.getImgIds())
@@ -187,7 +195,7 @@ def crop_image(img_path, cropped_image_dir, parts=2):
     return [path_1, path_2], [c1.shape[:2], c2.shape[:2]]
 
 
-def get_val_sample(images, val_size, seed=42):
+def get_unique_images(images, val_size, seed=42):
     random.seed(seed)
     images_filename = [img['file_name'].split('_', 1)[1] for img in images]
     images_filename = list(set(images_filename))
@@ -195,18 +203,45 @@ def get_val_sample(images, val_size, seed=42):
     images_filename.sort()
     val_images_sample = random.sample(images_filename, int(total_images * val_size))
     val_images_sample.sort()
+    return val_images_sample
+
+def get_val_mid_sample(images, val_size, seed=42):
+    val_images_sample = get_unique_images(images, val_size, seed)
     left_right = ['left', 'right']
     # odd images are left images, even images are right images
     for i in range(len(val_images_sample)):
         val_images_sample[i] = left_right[i % 2] + '_' + val_images_sample[i]
     return val_images_sample
 
+def get_val_zero_sample(images, val_size, seed=42):
+    val_images_sample = get_unique_images(images, val_size, seed)
+    left_right = ['left', 'right']
+    val_left_right = []
+    for prefix in left_right:
+        for img in val_images_sample:
+            print(prefix + '_' + img)
+            val_left_right.append(prefix + '_' + img)
+    return val_left_right
+
+def copy_images_to_folders(path_crops_benchmark, images, folder):
+    os.makedirs(os.path.join(path_crops_benchmark, folder, "data"), exist_ok=True)
+    for img in images:
+        file_name = img['file_name']
+        src = os.path.join(path_crops_benchmark, "data", file_name)
+        dst = os.path.join(path_crops_benchmark, folder, "data", file_name)
+        os.system(f'cp {src} {dst}')
+
+def create_annotation_file(ann_data, path_crops_benchmark, folder, annotation_file):
+    path_ann = os.path.join(path_crops_benchmark, folder, annotation_file)
+    with open(path_ann, 'w') as f:
+        f.write(json.dumps(ann_data))
 
 def divide_train_val(path_crops_benchmark, 
                      val_size=0.1,
                      annotation_file='annotations.json', 
                      cat_unique=False,
-                     output_original=True, 
+                     output_original=False,
+                     output_zero_shot=False, 
                      ):
     random.seed(42)
     train_folder = 'train'
@@ -223,8 +258,10 @@ def divide_train_val(path_crops_benchmark,
     images_filename.sort()
     if output_original:
         val_images_sample = random.sample(images_filename, int(len(images_filename) * val_size))
+    elif output_zero_shot:
+        val_images_sample = get_val_zero_sample(images, val_size)
     else:
-        val_images_sample = get_val_sample(images, val_size)
+        val_images_sample = get_val_mid_sample(images, val_size)
     val_images = [img for img in images if img['file_name'] in val_images_sample]
     train_images = [img for img in images if img['file_name'] not in val_images_sample]
     # get the annotations for train and val
@@ -249,29 +286,25 @@ def divide_train_val(path_crops_benchmark,
         annotations=val_annotations,
         categories=categories
     )
-    # create train and val folders
-    os.makedirs(os.path.join(path_crops_benchmark, train_folder, "data"), exist_ok=True)
-    os.makedirs(os.path.join(path_crops_benchmark, val_folder, "data"), exist_ok=True)
-    # copy the images to the train and val folders
-    for img in train_images:
-        file_name = img['file_name']
-        src = os.path.join(path_crops_benchmark, "data", file_name)
-        dst = os.path.join(path_crops_benchmark, train_folder, "data", file_name)
-        os.system(f'cp {src} {dst}')
-
-    for img in val_images:
-        file_name = img['file_name']
-        src = os.path.join(path_crops_benchmark, "data", file_name)
-        dst = os.path.join(path_crops_benchmark, val_folder, "data", file_name)
-        os.system(f'cp {src} {dst}')
+    copy_images_to_folders(path_crops_benchmark, 
+                           train_images, 
+                           train_folder)
+    
+    copy_images_to_folders(path_crops_benchmark,
+                            val_images,
+                            val_folder)
 
     # create the annotations files
-    train_coco_path = os.path.join(path_crops_benchmark, train_folder, annotation_file)
-    val_coco_path = os.path.join(path_crops_benchmark, val_folder, annotation_file)
-    with open(train_coco_path, 'w') as f:
-        f.write(json.dumps(train_coco))
-    with open(val_coco_path, 'w') as f:
-        f.write(json.dumps(val_coco))
+    create_annotation_file(train_coco,
+                            path_crops_benchmark,
+                            train_folder,
+                            annotation_file
+                           )
+    create_annotation_file(val_coco,
+                            path_crops_benchmark,
+                            val_folder,
+                            annotation_file
+                           )
 
 
 def default_transform():
@@ -389,16 +422,25 @@ def increase_dataset(path_crops_benchmark,
     os.system(f'cp {os.path.join(path_crops_benchmark, val_folder, "data", "*")} {os.path.join(path_crops_benchmark, val_folder_new, "data")}')
 
 
-def main(origin_coco_path, path_crops_benchmark, val_size, cat_unique=False, output_original=False):
+def main(origin_coco_path, 
+         path_crops_benchmark, 
+         val_size, 
+         cat_unique=False, 
+         output_original=False,
+         output_zero_shot=False,
+         crop_in_parts=True,
+        ):
     os.makedirs(os.path.join(path_crops_benchmark, "data"), exist_ok=True)
     origin_annotations = os.path.join(origin_coco_path, 'annotations.json')
     origin_images = os.path.join(origin_coco_path, "data")
     coco = COCO(origin_annotations)
-    create_dataset_crops(coco, origin_images, path_crops_benchmark)
+    if crop_in_parts:
+        create_dataset_crops(coco, origin_images, path_crops_benchmark)
     divide_train_val(path_crops_benchmark,
                         val_size=val_size,
                         output_original=output_original,
                         cat_unique=cat_unique,
+                        output_zero_shot=output_zero_shot
                     )
 
 if __name__ == "__main__":
@@ -407,9 +449,10 @@ if __name__ == "__main__":
     origin_coco_path = os.path.join(dataset_folder, 'coco_benchmark')
     path_crops_benchmark = os.path.join(dataset_folder, 'coco_benchmark_divided')
     main(origin_coco_path, 
-         path_crops_benchmark,
-         1, 
-         args.cat_unique, 
-         args.output_original,
-         )
+        path_crops_benchmark,
+        val_size=0.1, 
+        cat_unique=args.cat_unique, 
+        output_original=args.output_original,
+        output_zero_shot=args.output_zero_shot
+        )
 

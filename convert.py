@@ -218,7 +218,7 @@ def build_coco_json(folders,
             image_id += 1
     return images_json, annotations, categories
 
-def to_coco_json(path_dataset, path_coco_benchmark, crop_images, to_rle, skip_test):
+def main(path_dataset, path_coco_benchmark, crop_images, to_rle=False, skip_test=False):
     path_test = f'{path_coco_benchmark}_test'
     path_data = os.path.join(path_coco_benchmark, "data")
     os.makedirs(path_data, exist_ok=True)
@@ -237,7 +237,7 @@ def to_coco_json(path_dataset, path_coco_benchmark, crop_images, to_rle, skip_te
                     ),
         contributor="Josefina Ramos de Cox museum",
         url="https://datasets.cgv.tugraz.at/pattern-benchmark/",
-        date_created="2021/06/2021",
+        date_created="2021/06/20",
     )
     licenses = [
         dict(
@@ -255,9 +255,6 @@ def to_coco_json(path_dataset, path_coco_benchmark, crop_images, to_rle, skip_te
     )
     with open(os.path.join(path_coco_benchmark, 'annotations.json'), 'w') as file:
         json.dump(coco_data, file)
-
-def main(path_dataset, path_coco_benchmark, crop_images, to_rle=False, skip_test=False):
-    to_coco_json(path_dataset, path_coco_benchmark, crop_images, to_rle, skip_test)
 
 if __name__ == '__main__':
     args = parser.parse_args()

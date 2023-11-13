@@ -29,7 +29,7 @@ parser.add_argument(
     help='Path to save the COCO benchmark dataset'
 )
 parser.add_argument(
-    '--crop_images', 
+    '--original_images', 
     type=bool, 
     default=False,
     nargs='?',
@@ -159,7 +159,7 @@ def crop_image(img_path: str,
 def build_coco_json(folders,
                     path_data, 
                     path_test, 
-                    crop_images,
+                    original_images,
                     to_rle=False,
                     skip_test=False
                     ):
@@ -181,7 +181,7 @@ def build_coco_json(folders,
             segmentation_data = json.load(file)
             crop_coords = get_coords_crops(segmentation_data)
             basename = os.path.basename(img_path)
-            if crop_images:
+            if not original_images:
                 crop_path, (w,h) = crop_image(img_path, 
                                               cropped_image_dir=path_data, 
                                               cropped_image_dir_test=path_test,
@@ -218,7 +218,7 @@ def build_coco_json(folders,
             image_id += 1
     return images_json, annotations, categories
 
-def main(path_dataset, path_coco_benchmark, crop_images, to_rle=False, skip_test=False):
+def main(path_dataset, path_coco_benchmark, original_images, to_rle=False, skip_test=False):
     path_test = f'{path_coco_benchmark}_test'
     path_data = os.path.join(path_coco_benchmark, "data")
     os.makedirs(path_data, exist_ok=True)
@@ -227,7 +227,7 @@ def main(path_dataset, path_coco_benchmark, crop_images, to_rle=False, skip_test
     exclude_images = ['0056']
     folders = [folder for folder in folders if os.path.basename(folder) not in exclude_images]
     images_json, annotations, categories = build_coco_json(
-        folders, path_data, path_test, crop_images, to_rle, skip_test
+        folders, path_data, path_test, original_images, to_rle, skip_test
     )
     info = dict(
         year=2021,
@@ -260,4 +260,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     path_dataset = os.path.join('./datasets/', args.path_dataset)
     path_coco_benchmark = os.path.join('./datasets/', args.path_coco_benchmark)
-    main(path_dataset, path_coco_benchmark, args.crop_images, args.to_rle, args.skip_test)
+    main(path_dataset, path_coco_benchmark, args.original_images, args.to_rle, args.skip_test)

@@ -42,23 +42,32 @@ The transformation process is composed of three steps. First, we crop the images
 
 Second, we convert the data to COCO format. This step is necessary to get the annotations in the YOLO format. The COCO format data is saved in the `datasets/coco_benchmark/` folder.
 
-Finally, we can divide the data in train and validation increasing the data cropping the image in 2 parts in the center, considering the minimum bounding box area visibility of the patterns. This step saves the images in the `datasets/coco_benchmark_divided/train` and `datasets/coco_benchmark_divided/val` folders. The division process follows the next rules:
+Finally, we can divide the data in train and validation duplicating the data by cropping the image in 2 parts in the center, considering the minimum bounding box area visibility of the patterns. After this step, the images can be divided into a set of `train` and `val`. The division process follows the next rules:
 
 * The images are divided in the center ignoring the masks with less than 10% of the area original of the bounding box pattern. We do not want patterns that are too small. 
-* The original images are divided into train and validation with a proportion of 60% and 40% respectively. Once are divided the images, the mid images of the validation set are moved to the train set to avoid the repetition of the images. The strategy is graphically represented in the following image:
+* The original images (before the crop) are divided into train and validation with a proportion of 60% and 40% respectively. Once are divided the images, the mid-images of the validation set are moved to the train set to avoid the duplication of the images in validation. The strategy is graphically represented in the following image:
 
-![Division process](./images/division_process.png)
+![Division process](./images/unique_images_strategy.png)
+
+* In another strategy, for experiments `zero-shot`, the train and validation sets are built with the initial proportion of 60% and 40% respectively. The difference is that the images are duplicated, but with a small size, and the images of the validation set are not moved to the train set. The strategy is graphically represented in the following image:
+
+![Division zero shot](./images/zero_shot_strategy.png)
 
 ## Convert to COCO and YOLO format
 
 The script to convert the data in COCO format and remove areas without segmentation is available in the file `convert.py`. You can run the following command to get the annotations:
 
 ```bash
-python convert.py --crop_images
+python convert.py
 ```
 
-The script will create the folder that contains the COCO format data with an `annotation.json` file and a `data` folder in the `datasets` folder.
+The script will create the folder that contains the COCO format data with an `annotation.json` file and a `data` folder in the `datasets` folder. If you want to convert the dataset considering the regions without annotation you can add the parameter `--original_images`.
 
+To split the data in train and validation, you can run the following command:
+
+```bash
+python divide_dataset.py
+```
 Once you obtain the COCO formatted data, you can get the annotations in the YOLO format by running the following command:
 
 ```bash

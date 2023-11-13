@@ -61,7 +61,7 @@ The script to convert the data in COCO format and remove areas without segmentat
 python convert.py
 ```
 
-The script will create the folder that contains the COCO format data with an `annotation.json` file and a `data` folder in the `datasets` folder. If you want to convert the dataset considering the regions without annotation you can add the parameter `--original_images`.
+The script will create the folder that contains the COCO format data with an `annotation.json` file and a `data` folder in the `datasets` folder. If you want to convert the dataset considering the regions without annotation you can add the parameter `--original_images`. For all commands you can add the parameter `--help` to get more information about the parameters.
 
 To split the data in train and validation, you can run the following command:
 

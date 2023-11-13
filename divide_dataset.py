@@ -450,7 +450,7 @@ if __name__ == "__main__":
     path_crops_benchmark = os.path.join(dataset_folder, 'coco_benchmark_divided')
     main(origin_coco_path, 
         path_crops_benchmark,
-        val_size=0.1, 
+        val_size=0.4, 
         cat_unique=args.cat_unique, 
         output_original=args.output_original,
         output_zero_shot=args.output_zero_shot

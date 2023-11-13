@@ -61,7 +61,7 @@ The script to convert the data in COCO format and remove areas without segmentat
 python convert.py
 ```
 
-The script will create the folder that contains the COCO format data with an `annotation.json` file and a `data` folder in the `datasets` folder. If you want to convert the dataset considering the regions without annotation you can add the parameter `--original_images`. For all commands you can add the parameter `--help` to get more information about the parameters.
+The script will create the folder that contains the COCO format data with an `annotation.json` file and a `data` folder in the `datasets` folder. If you want to convert the dataset considering the regions without annotation you can add the parameter `--original_images`.
 
 To split the data in train and validation, you can run the following command:
 
@@ -76,6 +76,8 @@ python coco_to_yolo.py
 **For transforming COCO to YOLO format, is necessary that the segmentation in the annotation file is in polygon points format. RLE format is not supported.** 
 
 We use the [JSON2YOLO format repository from ultralytics](https://github.com/ultralytics/JSON2YOLO.git) to convert the annotations from COCO to YOLO format with refactoring for the structure of datasets.
+
+For all the scripts, you can get more information about the parameters by running the command with the `-h` or `--help` parameter.
 
 ## Citation
 

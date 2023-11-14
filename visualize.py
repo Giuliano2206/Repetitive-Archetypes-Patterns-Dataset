@@ -1,10 +1,18 @@
 import os
 import json
+import argparse
 
 import fiftyone as fo
 from fiftyone.types.dataset_types import COCODetectionDataset
 
-data_path = "datasets/coco_benchmark/"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--data_path", type=str, default="datasets/coco_benchmark/")
+parser.add_argument("--culture_file", type=str, default="datasets/datasetCulture/culture.json")
+parser.add_argument("--shape_file", type=str, default="datasets/datasetCulture/shape.json")
+args = parser.parse_args()
+
+data_path = args.data_path
 
 dataset = fo.Dataset.from_dir(
     data_path,
@@ -12,8 +20,9 @@ dataset = fo.Dataset.from_dir(
     name="benchmark",
     labels_path="annotations.json",
 )
-culture_file = "datasets/datasetCulture/culture.json"
-shape_file = "datasets/datasetCulture/shape.json"
+
+culture_file = args.culture_file
+shape_file = args.shape_file
 
 if os.path.exists(culture_file):
     with open("datasets/datasetCulture/culture.json") as f:

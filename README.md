@@ -65,7 +65,9 @@ The script will create the folder that contains the COCO format data with an `an
 Once we get the data in COCO format, we can divide it into train and validation sets, duplicating the data by cropping the image in 2 parts in the center, considering the *minimum bounding box area visibility* of the patterns. The division process follows the next rules:
 
 * The images are divided in the center ignoring the masks with less than 10% of the area original of the bounding box pattern. We do not want patterns that are too small. 
-* The original images (before the crop) are divided into train and validation with a proportion of 60% and 40% respectively `standard split`. Once are divided the images, the mid-images of the validation set are moved to the train set to avoid the duplication of the images in validation. The strategy is graphically represented in the following image:
+* The original images (before the crop) are divided into train and validation with a proportion of 60% and 40% respectively `standard split`. **Note: if the validation set is all the dataset, each set will have one unique image by each pattern. However, with the standard split, we got better results.** 
+
+Once are divided the images, the mid-images of the validation set are moved to the train set to avoid the duplication of the images in validation. The strategy is graphically represented in the following image:
 
 ![Division process](./images/unique_images_strategy.png)
 
